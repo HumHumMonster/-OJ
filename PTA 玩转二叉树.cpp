@@ -64,7 +64,7 @@ int Build (int ql , int qr , int zl , int zr)
     return now ;
 }
 
-void fan(int h , int hei)
+void fan(int h , int hei)   //翻转
 {
     node[h].hei = hei ;
     if (hei > deep)
@@ -79,19 +79,24 @@ void fan(int h , int hei)
         fan(node[h].rson , hei + 1 ) ;
 }
 
+
 queue <int> res ;
 
-void query(int h , int hei)
+
+void query()        //中序遍历
 {
-    if (node[h].hei == hei)
+    queue <int> q ;
+    q.push(0) ;
+    while (!q.empty())
     {
-        res.push(node[h].val) ;
-        return ;
+        int now = q.front() ;
+        q.pop() ;
+        res.push(node[now].val) ;
+        if (node[now].lson != -1)
+            q.push(node[now].lson) ;
+        if (node[now].rson != -1)
+            q.push(node[now].rson) ;
     }
-    if (node[h].lson != -1)
-         query(node[h].lson , hei) ;
-    if (node[h].rson != -1)
-         query(node[h].rson , hei) ;
 }
 
 
@@ -106,12 +111,10 @@ int main ()
 
     Build (1 , n , 1 , n) ;
     fan(0 , 1) ;
-    for (int i = 1 ; i <= deep ; ++i)
-    {
-        query(0 , i) ;
-    }
+    query() ;
+
     printf ("%d" , res.front()) ;
-        res.pop() ;
+    res.pop() ;
     while (!res.empty())
     {
         printf (" %d" , res.front()) ;
