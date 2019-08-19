@@ -1,0 +1,122 @@
+/*
+SCU - 4445(二分)2015四川省赛J - Right turn
+
+一个人走迷宫遵循碰到墙就右转继续走的原则
+
+人初始在(0 , 0) ， 初始方向为(1 , 0)
+有n个障碍物，障碍物的坐标x,y都是-1e9~1e9之间
+
+问最少右转几次才会出去
+
+思路：
+用map <int , vector <int> >存图
+用二分判断下一个位置
+
+
+*/
+
+
+
+
+#include <stdio.h>
+#include <math.h>
+#include <map>
+#include <algorithm>
+#include <set>
+#include <iterator>
+#include <vector>
+using namespace std ;
+
+#define LL long long
+LL n , m , k ;
+map <int , vector <int> > H ;
+map <int , vector <int> > L ;
+map <int , vector <int> > :: iterator it ;
+vector <int> :: iterator hhh ;
+int a , b ;
+set <pair < pair <int , int> , int > > S ;
+
+pair < pair <int , int> , int > getid(int x , int y , int to )
+{
+    return make_pair(make_pair(x , y) , to) ;
+}
+
+int x , y , to ;
+
+bool tonext()
+{
+    //printf ("x = %d  y = %d  to = %d\n" , x , y , to) ;
+    if (to == 0)
+    {
+        //for (hhh = L[y].begin() ; hhh != L)
+        hhh = upper_bound(L[y].begin() , L[y].end() , x) ;
+        //printf ("hhh = %d\n" , *hhh) ;
+        if (hhh == L[y].end())
+            return true ;
+        x = *hhh - 1 ;
+    }
+    else if (to == 1)
+    {
+        hhh = upper_bound(H[x].begin() , H[x].end() , y) ;
+        if (hhh == H[x].begin())
+            return true ;
+        y = H[x][hhh - H[x].begin() - 1] + 1 ;
+    }
+    else if (to == 2)
+    {
+        hhh = upper_bound(L[y].begin() , L[y].end() , x) ;
+        if (hhh == L[y].begin())
+            return true ;
+        x = L[y][hhh - L[y].begin() - 1] + 1 ;
+    }
+    else if (to == 3)
+    {
+        hhh = upper_bound(H[x].begin() , H[x].end() , y) ;
+        if (hhh == H[x].end())
+            return true ;
+        y = *hhh - 1 ;
+    }
+    to = (to + 1) % 4 ;
+    return false ;
+}
+
+int main ()
+{
+
+    while (scanf ("%d" , &n) != EOF)
+    {
+        H.clear() ;
+        L.clear() ;
+        for (int i = 1 ; i <= n ; ++i)
+        {
+            scanf ("%d%d" , &a , &b) ;
+            H[a].push_back(b) ;
+            L[b].push_back(a) ;
+        }
+        for (it = H.begin() ; it != H.end() ; ++it)
+        {
+            sort ((*it).second.begin() , (*it).second.end()) ;
+        }
+        for (it = L.begin() ; it != L.end() ; ++it)
+        {
+            sort ((*it).second.begin() , (*it).second.end()) ;
+        }
+        int res = 0 ;
+        S.clear() ;
+        S.insert (getid(0 , 0 , 0)) ;
+        x = 0 , y = 0 , to = 0 ;
+        while (1)
+        {
+            if (tonext())
+                break ;
+            ++res ;
+            if (S.count(getid(x , y , to)))
+            {
+                res = - 1;
+                break ;
+            }
+            S.insert(getid(x , y , to)) ;
+        }
+        printf ("%d\n" , res) ;
+    }
+}
